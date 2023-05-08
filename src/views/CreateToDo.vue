@@ -1,38 +1,35 @@
 <template>
   <div>
     <h1>Create ToDo</h1>
-    <!-- <form @submit.prevent="createTodo"> -->
-      <label for="title">Title</label>
-      <input id="title" type="text" v-model="todo.title" required>
-      <label for="description">Description</label>
-      <textarea id="description" v-model="todo.description" required></textarea>
-      <button type="submit">Create</button>
-    <!-- </form> -->
+    <form @submit.prevent="createTodo">
+      <v-text-field
+        v-model="title"
+        label="Title"
+        type="text"
+      />
+      <v-textarea label="Description" v-model="description" required></v-textarea>
+      <v-btn color="black" type="submit">Create</v-btn>
+    </form>
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
-// import { createTodo } from '../store/index'
+import { useStore } from 'vuex'
 
-export default {
-  name: 'CreateToDo',
-  setup() {
-    const todo = ref({ title: '', description: '' })
+const store = useStore()
 
-    // const createTodo = async () => {
-    //   try {
-    //     await createTodo(todo.value)
-    //     router.push('/')
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // }
+const title = ref('');
+const description = ref('')
 
-    return {
-      todo,
-      // createTodo
-    }
+const createTodo = async () => {
+  try {
+    await store.dispatch('todos/createTodo', {
+      title: title.value,
+      description: description.value
+    })
+  } catch (error) {
+    console.error(error)
   }
 }
 </script>

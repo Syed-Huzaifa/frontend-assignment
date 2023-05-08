@@ -1,5 +1,4 @@
 import axios from "axios";
-import { createNamespacedHelpers } from "vuex";
 
 export const user = {
     namespaced: true,
@@ -9,6 +8,7 @@ export const user = {
     },
     mutations: {
         setToken(state, token) {
+            console.log(state.token);
             state.token = token 
           },
           setUser(state, user) {
@@ -24,15 +24,15 @@ export const user = {
               email,
               password,
               password_confirmation: confirmPassword
-            });
+            })
             commit('setToken', response.data.token);
           },
-          async login({ commit }, { email, password }) {
+          async login({ commit, state }, { email, password }) {
             const response = await axios.post('http://3.232.244.22/api/login', {
               email,
               password
-            });
-            console.log(response);
+            })
+            console.log(state.token);
             commit('setToken', response.data.user.token);
             commit('setUser', response.data.user);
           },
@@ -58,5 +58,3 @@ export const user = {
     },
     getters: {}
 }
-
-export const { mapActions: mapUserActions, mapGetters: mapUserGetters } = createNamespacedHelpers('user');

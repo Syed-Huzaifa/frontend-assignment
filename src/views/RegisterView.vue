@@ -1,59 +1,77 @@
 <template>
-  <form @submit.prevent="submitForm">
-    <div>
-      <label>Email:</label>
-      <input v-model="userEmail" type="email">
-      <div v-if="v$?.email?.$error">
-        <span v-if="v$?.email?.required">Email is required.</span>
-        <span v-if="v$?.email?.email">Email is invalid.</span>
-      </div>
-    </div>
-    <div>
-      <label>Password:</label>
-      <input v-model="userPassword" type="password">
-      <div v-if="v$?.password?.$error">
-        <span v-if="v$?.password?.required">Password is required.</span>
-      </div>
-    </div>
-    <div>
-      <label>Confirm Password:</label>
-      <input v-model="confirmPassword" type="password">
-      <div v-if="v$?.confirmPassword?.$error">
-        <span v-if="v$?.confirmPassword?.required">Confirm Password is required.</span>
-        <span v-if="v$?.confirmPassword?.sameAsPassword">Passwords do not match.</span>
-      </div>
-    </div>
-    <button :disabled="v$?.$invalid">Submit</button>
-  </form>
+  <v-form @submit.prevent="submitForm">
+    <v-text-field
+      v-model="userEmail"
+      label="Email"
+      :rules="emailRules"
+      required
+    />
+    <v-text-field
+      v-model="userPassword"
+      label="Password"
+      :rules="passwordRules"
+      type="password"
+      required
+    />
+    <v-text-field
+      v-model="confirmPassword"
+      label="Confirm Password"
+      :rules="confirmPasswordRules"
+      type="password"
+      required
+    />
+    <v-btn color="black" :disabled="v$?.invalid" type="submit">Register</v-btn>
+  </v-form>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
+import { useStore } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, sameAs } from '@vuelidate/validators'
+import { useRouter } from 'vue-router'
 
-export default {
-  setup() {
-    const userEmail = ref('')
-    const userPassword = ref('')
-    const confirmPassword = ref('')
-    
-    const rules = {
-      email: { required, email },
-      password: { required },
-      confirmPassword: { required, sameAsPassword: sameAs(() => userPassword.value) }
-    }
+const store = useStore();
+const router = useRouter();
 
-    const v$ = useVuelidate(rules, { userEmail, userPassword, confirmPassword })
+const userEmail = ref('')
+const userPassword = ref('')
+const confirmPassword = ref('')
 
-    const submitForm = () => {
-      v$.value.$touch()
-      if (!v$.value.$error) {
-        // form is valid, submit data to server
-      }
-    }
+const rules = {
+  email: { required, email },
+  password: { required },
+  confirmPassword: { required, sameAsPassword: sameAs(() => userPassword.value) }
+}
 
-    return { userEmail, userPassword, confirmPassword, v$, submitForm }
+const v$ = useVuelidate(rules, { userEmail, userPassword, confirmPassword })
+
+const submitForm = async () => {
+  v$.value.$touch()
+  if (!!v$.value.$error) {
+    await store.dispatch('user/register', {
+      email: userEmail.value,
+      password: userPassword.value,
+      confirmPassword: confirmPassword.value
+    }).then(() => {
+      router.push({ path: '/login' })
+    })
   }
 }
+
+const emailRules = [
+  (v) => !!v || 'Email is required',
+  (v) => /.+@.+\..+/.test(v) || 'Email must be valid',
+]
+
+const passwordRules = [
+  (v) => !!v || 'Password is required',
+  (v) => /^(?=.{8,})(?!.*(\d)\1{1})(?!.*([a-zA-Z])\2{1})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).*$/.test(v) || 'Password should contain at least 8 characters, one number, one uppercase letter, one lowercase letter, and one special character'
+]
+
+
+const confirmPasswordRules = [
+  (v) => !!v || 'Confirm Password is required',
+  (v) => v === userPassword.value || 'Passwords do not match',
+]
 </script>

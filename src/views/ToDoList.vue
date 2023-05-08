@@ -1,4 +1,3 @@
-// components/ToDoList.vue
 <template>
   <div>
     <h1>My ToDos</h1>
@@ -14,68 +13,56 @@
   </div>
 </template>
 
-<script>
-import { ref, reactive, onMounted } from 'vue'
-// import { getTodos, deleteTodo } from '../store/index'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
-export default {
-  name: 'ToDoList',
-  setup() {
-    const todos = ref([])
-    const searchQuery = ref('')
-    const page = ref(1)
-    const isLoading = ref(false)
-    const hasMore = ref(true)
+const store = useStore();
 
-    // const loadTodos = async () => {
-    //   isLoading.value = true
-    //   try {
-    //     const data = await getTodos({ page: page.value, q: searchQuery.value })
-    //     todos.value = [...todos.value, ...data.todos]
-    //     hasMore.value = data.hasMore
-    //     page.value++
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    //   isLoading.value = false
-    // }
+const todos = ref([])
+const searchQuery = ref('')
+const page = ref(1)
+const isLoading = ref(false)
+const hasMore = ref(true)
 
-    // const deleteTodo = async (todo) => {
-    //   const confirmation = window.confirm(`Are you sure you want to delete "${todo.title}"?`)
-    //   if (!confirmation) return
-    //   try {
-    //     await deleteTodo(todo.id)
-    //     todos.value = todos.value.filter((t) => t.id !== todo.id)
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // }
-
-    const viewTodo = (todo) => {
-      router.push(`/todos/${todo.id}`)
-    }
-
-    const onScroll = () => {
-      const element = refs.loadMore
-      const { scrollTop, clientHeight, scrollHeight } = element
-      if (scrollTop + clientHeight >= scrollHeight && !isLoading.value && hasMore.value) {
-        // loadTodos()
-      }
-    }
-
-    onMounted(() => {
-      loadTodos()
+const loadTodos = async () => {
+  isLoading.value = true
+  try {
+    const data = await store.dispatch('todos/fetchTodos').then(() => {
+      todos.value = [...todos.value, ...data.todos]
+      hasMore.value = data.hasMore
+      page.value++
     })
+  } catch (error) {
+    console.error(error)
+  }
+  isLoading.value = false
+}
 
-    return {
-      todos,
-      searchQuery,
-      isLoading,
-      hasMore,
-      // deleteTodo,
-      viewTodo,
-      onScroll
-    }
+const deleteTodo = async (todo) => {
+  const confirmation = window.confirm(`Are you sure you want to delete "${todo.title}"?`)
+  if (!confirmation) return
+  try {
+    await store.dispatch('todos/deleteTodo', { id: todo.id });
+    todos.value = todos.value.filter((t) => t.id !== todo.id)
+  } catch (error) {
+    console.error(error)
   }
 }
+
+const viewTodo = (todo) => {
+  router.push(`/todos/${todo.id}`)
+}
+
+const onScroll = () => {
+  const element = refs.loadMore
+  const { scrollTop, clientHeight, scrollHeight } = element
+  if (scrollTop + clientHeight >= scrollHeight && !isLoading.value && hasMore.value) {
+    // loadTodos()
+  }
+}
+
+onMounted(() => {
+  loadTodos()
+})
 </script>

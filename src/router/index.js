@@ -28,14 +28,12 @@ const routes = [
   {
     path: '/todos',
     name: 'ToDoList',
-    component: ToDoList,
-    meta: { requiresAuth: true }
+    component: ToDoList
   },
   {
     path: '/todos/create',
     name: 'CreateToDo',
     component: CreateToDo,
-    meta: { requiresAuth: true }
   },
   {
     path: '/todos/:id',

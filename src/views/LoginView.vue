@@ -1,60 +1,47 @@
 <script setup>
 import { ref } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const store = useStore();
+const router = useRouter();
 
 const email = ref('');
 const password = ref('');
-const store = useStore();
 
-const registers = async () => {
+const loginUser = async () => {
     await store.dispatch('user/login', {
         email: email.value,
         password: password.value
+    }).then(() => {
+        router.push({ path: '/' })
     })
 }
-
-console.log(store.state.user);
 </script>
 
 
 
 <template>
-    <v-app>
-        <v-content>
-            <v-container fluid fill-height>
-                <v-layout align-center justify-center>
-                    <v-flex xs12 sm8 md4>
-                        <v-card class="elevation-12">
-                                <v-toolbar dark color="primary">
-                                    <v-toolbar-title>Login form</v-toolbar-title>
-                                </v-toolbar>
-                                <v-card-text>
-                                    <v-form>
-                                        <v-text-field
-                                            v-model="email"
-                                            prepend-icon="person"
-                                            name="login"
-                                            label="Login"
-                                            type="text"
-                                        ></v-text-field>
-                                        <v-text-field
-                                            v-model="password"
-                                            id="password"
-                                            prepend-icon="lock"
-                                            name="password"
-                                            label="Password"
-                                            type="password"
-                                        ></v-text-field>
-                                    </v-form>
-                                </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary" @click="registers">Login</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </v-content>
-    </v-app>
+    <h1>Welcome to ToDo!</h1>
+    <v-form @submit.prevent="loginUser">
+            <v-text-field
+                v-model="email"
+                prepend-icon="person"
+                name="login"
+                label="Login"
+                type="text"
+                autocomplete="off"
+            ></v-text-field>
+            <v-text-field
+                v-model="password"
+                id="password"
+                prepend-icon="lock"
+                name="password"
+                label="Password"
+                type="password"
+                autocomplete="off"
+            ></v-text-field>
+        <v-btn class="mx-10" color="black" type="submit">Login</v-btn>
+        <v-btn style="width: 25%" variant="outlined" color="black" @click="router.push({ path: '/register' })">Not a user? Register</v-btn>
+    </v-form>
 </template>

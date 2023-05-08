@@ -16,7 +16,7 @@
   <script>
   import { ref, watchEffect } from 'vue'
   import { useRoute } from 'vue-router'
-  import { getTodo, updateTodo } from '../store/index'
+  // import { getTodo, updateTodo } from '../store/index'
   
   export default {
     setup() {
@@ -29,7 +29,7 @@
       })
   
       const updateTodo = async () => {
-        await updateTodo(todo.value)
+        // await updateTodo(todo.value)
         // Redirect to ToDo list screen
       }
   

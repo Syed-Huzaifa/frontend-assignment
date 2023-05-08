@@ -2,11 +2,18 @@
 import { ref } from 'vue';
 import { useStore } from 'vuex';
 
+const email = ref('');
+const password = ref('');
 const store = useStore();
 
-const login = () => {
-    store.dispatch('loginUser');
+const registers = async () => {
+    await store.dispatch('user/login', {
+        email: email.value,
+        password: password.value
+    })
 }
+
+console.log(store.state.user);
 </script>
 
 
@@ -24,12 +31,14 @@ const login = () => {
                                 <v-card-text>
                                     <v-form>
                                         <v-text-field
+                                            v-model="email"
                                             prepend-icon="person"
                                             name="login"
                                             label="Login"
                                             type="text"
                                         ></v-text-field>
                                         <v-text-field
+                                            v-model="password"
                                             id="password"
                                             prepend-icon="lock"
                                             name="password"
@@ -40,7 +49,7 @@ const login = () => {
                                 </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="primary" to="/">Login</v-btn>
+                                <v-btn color="primary" @click="registers">Login</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-flex>

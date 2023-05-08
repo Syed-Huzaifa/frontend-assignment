@@ -1,5 +1,4 @@
 import axios from "axios";
-import { createNamespacedHelpers } from "vuex";
 
 
 export const todos = {
@@ -8,38 +7,36 @@ export const todos = {
         todos: []
     }),
     mutations: {
-        setTodos(todos, state) {
+          setTodos(state, todos) {
             state.todos = todos;
           },
-          addTodo(todo, state) {
+          addTodo(state, todo) {
             state.todos.push(todo);
           },
-          updateTodo (todo, state) {
+          updateTodo (state, todo) {
             const index = state.todos.findIndex(t => t.id === todo.id);
             if (index !== -1) {
               state.todos.splice(index, 1, todo);
             }
           },
-          deleteTodo (id) {
+          deleteTodo (state, id) {
             const index = state.todos.findIndex(t => t.id === id);
             if (index !== -1) {
               state.todos.splice(index, 1);
             }
           },
-          setSingleTodo (todo, state) {
+          setSingleTodo (state, todo) {
             state.currentTodo = todo
           },
     },
     actions: {
         async fetchTodos({ commit, rootState }) {
-            console.log(rootState)
             const response = await axios.get('http://3.232.244.22/api/items', {
               headers: {
                 Authorization: `Bearer ${rootState.user.token}`
               }
             });
-            console.log(response.data.items.data)
-            commit('setTodos', response.data);
+            commit('setTodos', response.data.items.data);
           },
           async fetchTodo({ commit, rootState }, id) {
             const response = await axios.get(`https://my-todo-api.com/todos/${id}`, {
@@ -80,7 +77,9 @@ export const todos = {
             commit('deleteTodo', id);
           },
     },
-    getters: {}
+    getters: {
+      todos({ todos }) {
+        return todos;
+      }
+    }
 }
-
-export const { mapActions: mapTodosActions, mapGetters: mapTpdosGetters } = createNamespacedHelpers('todos');

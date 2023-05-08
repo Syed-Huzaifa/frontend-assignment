@@ -1,5 +1,13 @@
 <template>
+  <NavBar />
   <div>
+    <v-alert
+      v-if="created"
+      color="success"
+      icon="$success"
+      title="Alert title"
+      text="Todo created!"
+    ></v-alert>
     <h1>Create ToDo</h1>
     <form @submit.prevent="createTodo">
       <v-text-field
@@ -14,19 +22,27 @@
 </template>
 
 <script setup>
+import NavBar from '../components/NavBar.vue';
+
 import { ref } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router';
 
 const store = useStore()
+const router = useRouter()
 
 const title = ref('');
-const description = ref('')
+const description = ref('');
+const created = ref(false)
 
 const createTodo = async () => {
   try {
     await store.dispatch('todos/createTodo', {
       title: title.value,
       description: description.value
+    }).then(() => {
+      created.value = true
+      router.push({ path: '/todos' })
     })
   } catch (error) {
     console.error(error)

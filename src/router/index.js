@@ -33,13 +33,13 @@ const routes = [
   {
     path: '/todos/create',
     name: 'CreateToDo',
-    component: CreateToDo,
+    component: CreateToDo
   },
   {
     path: '/todos/:id',
     name: 'ViewUpdateToDo',
     component: ViewUpdateToDo,
-    meta: { requiresAuth: true }
+    // meta: { requiresAuth: true }
   }
 ]
 
@@ -50,13 +50,13 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('token')
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
       next('/login')
     } else {
       next()
     }
-  } else if (to.matched.some(record => record.meta.requiresGuest)) {
+  } else if (to.matched.some((record) => record.meta.requiresGuest)) {
     if (isAuthenticated) {
       next('/todos')
     } else {

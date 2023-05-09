@@ -8,7 +8,11 @@
         :key="todo.title"
         :title="todo.title"
         :subtitle="todo.description"
-      ><v-btn color="black" @click.stop="deleteTodo(todo)">Delete</v-btn></v-list-item>
+        >
+        <v-btn color="black" @click.stop="deleteTodo(todo)">Delete</v-btn>
+        <v-btn color="black" @click.stop="editTodo(todo)">Edit</v-btn>
+        </v-list-item
+      >
     </v-list>
     <div v-if="isLoading" class="loading">Loading...</div>
     <div v-if="hasMore" ref="loadMore" @scroll="onScroll" class="load-more">Load more</div>
@@ -16,26 +20,28 @@
 </template>
 
 <script setup>
-import NavBar from '../components/NavBar.vue';
-import { ref, onMounted } from 'vue';
-import { useStore, mapGetters } from 'vuex'
+import { computed } from '@vue/reactivity';
+import NavBar from '../components/NavBar.vue'
+import { ref, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router';
 
-const store = useStore();
+const store = useStore()
+const router = useRouter()
 
 const todos = ref([])
-const searchQuery = ref('')
 const page = ref(1)
 const isLoading = ref(false)
 const hasMore = ref(true)
 
-const getTodos = store.getters['todos/todos'];
-
-console.log('get todos', getTodos)
+const getTodos = computed(() => {
+  return store.getters['todos/todos']
+})
 
 const loadTodos = async () => {
   isLoading.value = true
   try {
-    const data = await store.dispatch('todos/fetchTodos');
+    const data = await store.dispatch('todos/fetchTodos')
     todos.value = [...todos.value, ...data.todos]
     hasMore.value = data.hasMore
     page.value++
@@ -49,15 +55,15 @@ const deleteTodo = async (todo) => {
   const confirmation = window.confirm(`Are you sure you want to delete "${todo.title}"?`)
   if (!confirmation) return
   try {
-    // console.log('todo', todo.id)
-    await store.dispatch('todos/deleteTodo', { id: todo.id });
+    console.log('todo', todo.id)
+    await store.dispatch('todos/deleteTodo', { id: todo.id })
     todos.value = todos.value.filter((t) => t.id !== todo.id)
   } catch (error) {
     console.error(error)
   }
 }
 
-const viewTodo = (todo) => {
+const editTodo = async (todo) => {
   router.push(`/todos/${todo.id}`)
 }
 

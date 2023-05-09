@@ -14,8 +14,8 @@ import * as directives from 'vuetify/directives'
 const app = createApp(App)
 
 const vuetify = createVuetify({
-    components,
-    directives,
+  components,
+  directives
 })
 
-app.use(router).use(vuetify).use(stores).mount('#app');
+app.use(router).use(vuetify).use(stores).mount('#app')

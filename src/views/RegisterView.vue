@@ -63,11 +63,7 @@ const emailRules = [
 
 const passwordRules = [
   (v) => !!v || 'Password is required',
-  (v) =>
-    /^(?=.{8,})(?!.*(\d)\1{1})(?!.*([a-zA-Z])\2{1})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).*$/.test(
-      v
-    ) ||
-    'Password should contain at least 8 characters, one number, one uppercase letter, one lowercase letter, and one special character'
+  (v) => v.length > 8 || 'Password should contain atleast 8 characters'
 ]
 
 const confirmPasswordRules = [

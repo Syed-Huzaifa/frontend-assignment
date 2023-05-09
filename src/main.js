@@ -18,4 +18,6 @@ const vuetify = createVuetify({
   directives
 })
 
+stores.commit('user/initializeStore')
+
 app.use(router).use(vuetify).use(stores).mount('#app')

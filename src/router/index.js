@@ -5,6 +5,7 @@ import Register from '../views/RegisterView.vue'
 import ToDoList from '../views/ToDoList.vue'
 import CreateToDo from '../views/CreateToDo.vue'
 import ViewUpdateToDo from '../views/ViewUpdateToDo.vue'
+import Authentication from '../layouts/AuthenticationView.vue'
 
 const routes = [
   {
@@ -27,19 +28,29 @@ const routes = [
   },
   {
     path: '/todos',
-    name: 'ToDoList',
-    component: ToDoList
-  },
-  {
-    path: '/todos/create',
-    name: 'CreateToDo',
-    component: CreateToDo
-  },
-  {
-    path: '/todos/:id',
-    name: 'ViewUpdateToDo',
-    component: ViewUpdateToDo,
-    // meta: { requiresAuth: true }
+    name: 'ToDos',
+    component: Authentication,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'ToDoList',
+        component: ToDoList,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'create',
+        name: 'CreateToDo',
+        component: CreateToDo,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: ':id',
+        name: 'ViewUpdateToDo',
+        component: ViewUpdateToDo,
+        meta: { requiresAuth: true }
+      }
+    ]
   }
 ]
 

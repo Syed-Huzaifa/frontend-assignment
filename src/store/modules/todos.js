@@ -3,11 +3,25 @@ import axios from 'axios'
 export const todos = {
   namespaced: true,
   state: () => ({
-    todos: []
+    todos: [],
+    currentTodo: null
   }),
   mutations: {
     setTodos(state, todos) {
-      state.todos = todos
+      let todosRef = [];
+      if (state.todos.length) {
+        todosRef = [
+          ...todosRef,
+          ...state.todos
+        ]
+      }
+      if (todos.length) {
+        todosRef = [
+          ...todosRef,
+          ...todos
+        ]
+      }
+      state.todos = todosRef
     },
     addTodo(state, todo) {
       state.todos.push(todo)
@@ -29,24 +43,23 @@ export const todos = {
     }
   },
   actions: {
-    async fetchTodos({ commit, rootState }) {
-      const response = await axios.get('http://3.232.244.22/api/items', {
+    async fetchTodos({ commit }, page) {
+      const response = await axios.get(`http://3.232.244.22/api/items?page=${page}`, {
         headers: {
-          Authorization: `Bearer ${rootState.user.token}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
       commit('setTodos', response.data.items.data)
     },
-    async fetchTodo({ commit, rootState }, id) {
-      const response = await axios.get(`http://3.232.244.22/api/todos/${id}`, {
+    async fetchTodo({ commit }, id) {
+      const response = await axios.get(`http://3.232.244.22/api/item/${id}`, {
         headers: {
-          Authorization: `Bearer ${rootState.user.token}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
-      console.log(response.data);
-      commit('setSingleTodo', response.data)
+      commit('setSingleTodo', response.data.item)
     },
-    async createTodo({ commit, rootState }, { title, description }) {
+    async createTodo({ commit }, { title, description }) {
       const response = await axios.post(
         'http://3.232.244.22/api/item',
         {
@@ -55,13 +68,13 @@ export const todos = {
         },
         {
           headers: {
-            Authorization: `Bearer ${rootState.user.token}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         }
       )
       commit('addTodo', response.data)
     },
-    async updateTodo({ commit, rootState }, { id, title, description }) {
+    async updateTodo({ commit }, { id, title, description }) {
       const response = await axios.put(
         `http://3.232.244.22/api/item/${id}`,
         {
@@ -70,16 +83,16 @@ export const todos = {
         },
         {
           headers: {
-            Authorization: `Bearer ${rootState.user.token}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         }
       )
       commit('updateTodo', response.data)
     },
-    async deleteTodo({ commit, rootState }, id) {
+    async deleteTodo({ commit }, id) {
       await axios.delete(`http://3.232.244.22/api/item/${id}`, {
         headers: {
-          Authorization: `Bearer ${rootState.user.token}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
       commit('deleteTodo', id)
@@ -88,6 +101,9 @@ export const todos = {
   getters: {
     todos({ todos }) {
       return todos
+    },
+    todo({ currentTodo }) {
+      return currentTodo
     }
   }
 }

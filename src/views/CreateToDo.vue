@@ -1,5 +1,4 @@
 <template>
-  <NavBar />
   <div>
     <v-alert
       v-if="created"
@@ -18,8 +17,6 @@
 </template>
 
 <script setup>
-import NavBar from '../components/NavBar.vue'
-
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'

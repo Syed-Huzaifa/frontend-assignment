@@ -1,37 +1,42 @@
 <template>
   <div>
     <h2>View/Update To-Do</h2>
-    {{ todo }}
-    <!-- <form @submit.prevent="createTodo">
-      <v-text-field v-model="title" :value="todo.title" label="Title" type="text" />
-      <v-textarea label="Description" :value="todo.description" v-model="description" required></v-textarea>
+    <form @submit.prevent="updateTodo()">
+      <v-text-field v-model="todo.title" :value="todo.title" label="Title" type="text" />
+      <v-textarea label="Description" :value="todo.description" v-model="todo.description" required></v-textarea>
       <v-btn color="black" type="submit">Create</v-btn>
-    </form> -->
+    </form>
   </div>
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed } from 'vue';
+// import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
 const route = useRoute()
 const store = useStore()
+const router = useRouter()
 
 const todoId = route.params.id
-const todo = ref(null)
+// const todo = ref(null)
 
-const getTodo = (async () => {
-  todo.value = await store.dispatch('todos/fetchTodo', { id: todoId })
+const todo = computed(() => {
+  return store.getters['todos/todo']
 })
 
-getTodo()
+console.log(todo.value);
 
-// todo.value = await store.dispatch('todos/fetchTodo', { id: todoId })
-console.log(todoId);
+const getTodo = (async () => {
+  todo.value = await store.dispatch('todos/fetchTodo', todoId)
+})
+
+getTodo();
 
 const updateTodo = async () => {
-  // await updateTodo(todo.value)
-  // Redirect to ToDo list screen
+  store.dispatch('todos/updateTodo', todo.value).then(() => {
+    router.push({ path: '/todos' })
+  })
 }
 </script>
